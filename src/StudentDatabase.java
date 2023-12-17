@@ -52,13 +52,13 @@ public class StudentDatabase {
             enrollStudent(sc);
         }
 
-        System.out.println("Student enrolled successfully.");
+        System.out.println("Persons.Student enrolled successfully.");
         studentList.add(newStudent);
         makeStudentID++;
 
         /* TODO: IMPLEMENT IF NEED APPROVAL ANG ENROLLMENT
         if (getApprover()) {
-            System.out.println("Student enrolled successfully.");
+            System.out.println("Persons.Student enrolled successfully.");
             studentList.add(newStudent);
             makeStudentID++;
         } else {
@@ -152,11 +152,11 @@ public class StudentDatabase {
         }
 
         if (found) {
-            System.out.println("\nStudent found!");
+            System.out.println("\nPersons.Student found!");
             displayIndividual(student);
             modifyOptions(sc,student);
         } else {
-            System.out.println("\nStudent not found.");
+            System.out.println("\nPersons.Student not found.");
         }
 
     }
@@ -211,7 +211,7 @@ public class StudentDatabase {
 
                 if (choiceB == 1) {
                     if (getApprover()) {
-                        System.out.println("Student is now set to inactive");
+                        System.out.println("Persons.Student is now set to inactive");
                         student.setIsActive(false);
                     } else {
                         System.out.println("Enroller account detected! Pushed request to approver");

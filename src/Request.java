@@ -19,7 +19,7 @@ public class Request {
         this.request = request;
         newCourse = " ";
     }
-    public Request(int count,Student student,String request,String newCourse) {
+    public Request(int count, Student student, String request, String newCourse) {
         this.requestCount = count;
         this.student = student;
         this.status = 0;
