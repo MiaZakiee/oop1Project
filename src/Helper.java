@@ -46,7 +46,6 @@ public class Helper {
 
         switch (choice) {
             case 1:
-                // TODO: create display function for pending requests
                 database.displayRequests(sc);
                 approverStart(sc);
                 break;
@@ -54,7 +53,6 @@ public class Helper {
                 enrollOptions(sc);
                 break;
             case 3:
-                // TODO: create student search
                 viewStudents(sc);
                 break;
             case 4:
@@ -115,8 +113,9 @@ public class Helper {
                 [1] View all students
                 [2] Search via student ID
                 [3] Search via course
-                [4] Back
-                """,4,sc);
+                [4] View all inactive students
+                [5] Back
+                """,5,sc);
 
         switch (choice) {
             case 1:
@@ -128,12 +127,15 @@ public class Helper {
                 viewStudents(sc);
                 break;
             case 3:
-                // TODO: create student search
                 sc.nextLine();
                 database.searchByCourse(sc);
                 viewStudents(sc);
                 break;
             case 4:
+                database.viewAllInactiveStudents();
+                viewStudents(sc);
+                break;
+            case 5:
                 if (database.getApprover()){
                     approverStart(sc);
                 } else {
@@ -142,6 +144,4 @@ public class Helper {
                 break;
         }
     }
-
-
 }

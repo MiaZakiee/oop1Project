@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.*;
 
@@ -30,7 +31,7 @@ public class StudentDatabase {
         newStudent.setLastName(sc);
         newStudent.setFirstName(sc);
         newStudent.setMiddleName(sc);
-        //newStudent.setAge(sc); TODO:DO THIS ASAP
+        newStudent.setDateOfBirth(sc);
         newStudent.setContactNumber(sc);
         newStudent.setEmailAddress(sc);
         newStudent.setAddress(sc);
@@ -48,17 +49,17 @@ public class StudentDatabase {
                 """,2,sc);
 
         if (choice == 2) {
-            System.out.println("Enter details again");
+            System.out.println("\nEnter details again");
             enrollStudent(sc);
         }
 
-        System.out.println("Persons.Student enrolled successfully.");
+        System.out.println("\nStudent enrolled successfully.");
         studentList.add(newStudent);
         makeStudentID++;
 
         /* TODO: IMPLEMENT IF NEED APPROVAL ANG ENROLLMENT
         if (getApprover()) {
-            System.out.println("Persons.Student enrolled successfully.");
+            System.out.println("Student enrolled successfully.");
             studentList.add(newStudent);
             makeStudentID++;
         } else {
@@ -70,7 +71,7 @@ public class StudentDatabase {
     }
 
     public void batchEnroll (Scanner sc) {
-        int num = Util.getUserChoice("Enter number of students to enroll: ",10,sc);
+        int num = Util.getUserChoiceWithPrompt("Enter number of students to enroll: ",10,sc);
 
         for (int i = 0; i < num; i++) {
             enrollStudent(sc);
@@ -78,12 +79,26 @@ public class StudentDatabase {
     }
 
     public void viewAllStudents () {
-        System.out.println("ID NUMBER LAST NAME      FIRST NAME     MIDDLE NAME     AGE  SEX  COURSE    YEAR LEVEL CONTACT INFORMATION   EMAIL ADDRESS            ADDRESS");
-
-        // TODO: ADD CONDITIONAL IF ACTIVE STUDENT
-        //LOOP SA THROUGH STUDENTS
+        if (studentList.isEmpty()) {
+            System.out.println("\nList Empty.");
+            return;
+        }
+        System.out.println("\nID NUMBER LAST NAME      FIRST NAME     MIDDLE NAME     AGE  SEX  COURSE    YEAR LEVEL CONTACT INFORMATION   EMAIL ADDRESS            ADDRESS");
         for (Student i : studentList) {
             if (i.getIsActive()) {
+                displayIndividualTable(i);
+            }
+        }
+    }
+
+    public void viewAllInactiveStudents () {
+        if (studentList.isEmpty()) {
+            System.out.println("\nList Empty.");
+            return;
+        }
+        System.out.println("\nID NUMBER LAST NAME      FIRST NAME     MIDDLE NAME     AGE  SEX  COURSE    YEAR LEVEL CONTACT INFORMATION   EMAIL ADDRESS            ADDRESS");
+        for (Student i : studentList) {
+            if (!i.getIsActive()) {
                 displayIndividualTable(i);
             }
         }
@@ -92,7 +107,7 @@ public class StudentDatabase {
     public void displayIndividual(Student student) {
         System.out.println(
                 "Name:             " + student.getLastName() + ", " + student.getFirstName() + " " + student.getMiddleName() + "\n" +
-                "Age:              AgePuhon" + "\n" +//+ student.getAge
+                "Age:              " + Student.getAge(student.getDateOfBirth())+ "\n" +
                 "Gender:           " + student.getSex() + "\n" +
                 "Course:           " + student.getCourse() + " " + student.getYearLevel() + "\n" +
                 "Contact Number:   " + student.getContactNumber() + "\n" +
@@ -107,7 +122,7 @@ public class StudentDatabase {
                         "%-15s" +
                         "%-15s" +
                         "%-16s" +
-                        "20   " +
+                        "%-5d" +
                         "%-5s" +
                         "%-10s" +
                         "%-11d" +
@@ -118,7 +133,7 @@ public class StudentDatabase {
                 student.getLastName(),
                 student.getFirstName(),
                 student.getMiddleName(),
-                //TODO: GETAGE MAKE AGE YAWA
+                Student.getAge(student.getDateOfBirth()),
                 student.getSex(),
                 student.getCourse(),
                 student.getYearLevel(),
@@ -129,11 +144,18 @@ public class StudentDatabase {
 
     public void searchByCourse(Scanner sc) {
         String course = Util.inputCourse(sc);
-        System.out.println("\nID NUMBER LAST NAME      FIRST NAME     MIDDLE NAME     AGE  SEX  COURSE    YEAR LEVEL CONTACT INFORMATION   EMAIL ADDRESS            ADDRESS");
+        boolean flag = true;
         for (Student i : studentList) {
             if (Objects.equals(i.getCourse(), course)) {
+                if (flag) {
+                    System.out.println("\nID NUMBER LAST NAME      FIRST NAME     MIDDLE NAME     AGE  SEX  COURSE    YEAR LEVEL CONTACT INFORMATION   EMAIL ADDRESS            ADDRESS");
+                    flag = false;
+                }
                 displayIndividualTable(i);
             }
+        }
+        if (flag) {
+            System.out.println("\nThere are no students in this course.");
         }
     }
 
@@ -152,11 +174,11 @@ public class StudentDatabase {
         }
 
         if (found) {
-            System.out.println("\nPersons.Student found!");
+            System.out.println("\nStudent found!");
             displayIndividual(student);
             modifyOptions(sc,student);
         } else {
-            System.out.println("\nPersons.Student not found.");
+            System.out.println("\nStudent not found.");
         }
 
     }
@@ -184,12 +206,12 @@ public class StudentDatabase {
                 if (choiceB == 1) {
                     sc.nextLine();
                     String newCourse = Util.inputCourse(sc);
-                    flag = checkApprover("Course changed successfully");
+                    flag = checkApprover("\nCourse changed successfully");
                     if (flag) {
                         student.setCourse(newCourse);
                     } else {
                         pending = "Change course of student " + student.getStudentID() + " from " + student.getCourse() + " to " + newCourse;
-                        Request req = new Request(requestCount + 1,student,pending,newCourse);
+                        Request req = new Request(requestCount + 1,student,pending,newCourse,LocalDate.now());
                         requestCount++;
                         pendingRequest.push(req);
                     }
@@ -211,38 +233,37 @@ public class StudentDatabase {
 
                 if (choiceB == 1) {
                     if (getApprover()) {
-                        System.out.println("Persons.Student is now set to inactive");
+                        System.out.println("\nStudent is now set to inactive");
                         student.setIsActive(false);
                     } else {
-                        System.out.println("Enroller account detected! Pushed request to approver");
+                        System.out.println("\nEnroller account detected! Pushed request to approver");
                         pending = switch (choice) {
                             case 2 -> ("Delete student " + student.getStudentID());
-                            case 3 -> ("Graduate student" + student.getStudentID());
-                            case 4 -> ("Dismiss student" + student.getStudentID());
+                            case 3 -> ("Graduate student " + student.getStudentID());
+                            case 4 -> ("Dismiss student " + student.getStudentID());
                             default -> pending;
                         };
-                        Request req = new Request(requestCount + 1,student,pending);
+                        Request req = new Request(requestCount + 1,student,pending,LocalDate.now());
                         requestCount++;
                         pendingRequest.push(req);
                     }
                 }
                 break;
             case 5:
-                // go back bitch
                 break;
         }
     }
 
     public void displayRequests(Scanner sc) {
-        Request toProcess = null;
         if (requestCount > 0) {
-            // TODO: HEADING
+            Request toProcess = null;
+           System.out.println("\nNo. ID       Request                                            Status   Date Pushed Date Processed");
             for (Request i : pendingRequest) {
-                System.out.printf("[%d] %s\n",i.getCount(), i.display());
+                System.out.printf("[%d] %s\n",i.get_ID(), i.display());
             }
             int choice = Util.getUserChoiceWithPrompt("Enter request number: ",requestCount,sc);
             for (Request i: pendingRequest) {
-                if (choice == i.getCount()) {
+                if (choice == i.get_ID()) {
                     toProcess = i;
                     break;
                 }
@@ -250,7 +271,7 @@ public class StudentDatabase {
 
             handleRequest(toProcess,sc);
         } else {
-            System.out.println("No requests");
+            System.out.println("\nNo requests");
         }
     }
 
@@ -259,7 +280,7 @@ public class StudentDatabase {
             System.out.println(success);
             return true;
         } else {
-            System.out.println("Enroller account detected! Pushed request to approver");
+            System.out.println("\nEnroller account detected! Pushed request to approver");
             return false;
         }
     }
@@ -274,22 +295,22 @@ public class StudentDatabase {
 
         switch (choice) {
             case 1:
-                if (Objects.equals(toProcess.newCourse, " ")) {
-                    toProcess.student.setIsActive(false);
+                if (Objects.equals(toProcess.getNewCourse(), " ")) {
+                    toProcess.setStatus(false);
                 } else {
-                    toProcess.student.setCourse(toProcess.newCourse);
+                    toProcess.changeCourse(toProcess.getNewCourse());
                 }
                 toProcess.setStatus(1);
-                System.out.println("Request approved.");
+                System.out.println("\nRequest approved.");
+                toProcess.setProcessedDate(LocalDate.now());
                 break;
             case 2:
-                assert toProcess != null;
                 toProcess.setStatus(2);
-                System.out.println("Request denied.");
+                System.out.println("\nRequest denied.");
+                toProcess.setProcessedDate(LocalDate.now());
                 break;
             case 3:
-                assert toProcess != null;
-                displayIndividual(toProcess.student);
+                displayIndividual(toProcess.getStudent());
                 handleRequest(toProcess,sc);
                 break;
             default:

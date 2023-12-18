@@ -1,4 +1,6 @@
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.time.*;
 
 public abstract class Person {
     private String lastName;
@@ -8,8 +10,7 @@ public abstract class Person {
     private String contactNumber;
     private String emailAddress;
     private String address;
-
-    public Person () {}
+    private LocalDate dateOfBirth;
 
     //getters
     public String getLastName() {
@@ -38,6 +39,17 @@ public abstract class Person {
 
     public String getAddress () {
         return address;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public static int getAge(LocalDate dateOfBirth) {
+        LocalDate today = LocalDate.now();
+        Period age = Period.between(dateOfBirth,today);
+
+        return age.getYears();
     }
 
     //setters
@@ -75,6 +87,22 @@ public abstract class Person {
 
     public void setAddress(Scanner sc) {
         this.address = Util.getStringUserChoice("Enter address: ",0,sc);
+    }
+
+    public void setDateOfBirth(Scanner sc) {
+        LocalDate dateOfBirth = null;
+        boolean validInput = false;
+
+        while (!validInput) {
+            try {
+                String input = Util.getStringUserChoice("Enter date of birth (yyyy-MM-dd): ", 0, sc);
+                dateOfBirth = LocalDate.parse(input, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                validInput = true;
+            } catch (Exception e) {
+                System.out.println("Incorrect date format. Please enter in format yyyy-MM-dd.");
+            }
+        }
+        this.dateOfBirth = dateOfBirth;
     }
 }
 
