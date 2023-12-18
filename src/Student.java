@@ -5,6 +5,13 @@ public class Student extends Person{
     private String course;
     private final int yearLevel;
     private boolean isActive;
+    /*
+    TODO: CHANGE isActive to Status
+        1 = Active
+        2 = Dismissed
+        3 = Graduate
+        4 = Removed
+     */
 
     //Constructor
     public Student(int makeStudentID) {
@@ -33,12 +40,6 @@ public class Student extends Person{
         this.course = course;
     }
 
-    /*
-    TODO: IMPLEMENT WHEN DATES ARE ADDED MAYBE??
-    public void setYearLevel (int yearLevel) {
-        this.yearLevel = yearLevel;
-    }
-     */
     public void setIsActive (boolean isActive) {
         this.isActive = isActive;
     }

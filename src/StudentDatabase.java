@@ -57,13 +57,13 @@ public class StudentDatabase {
         studentList.add(newStudent);
         makeStudentID++;
 
-        /* TODO: IMPLEMENT IF NEED APPROVAL ANG ENROLLMENT
+        /* TO DO: IMPLEMENT IF NEED APPROVAL ANG ENROLLMENT
         if (getApprover()) {
             System.out.println("Student enrolled successfully.");
             studentList.add(newStudent);
             makeStudentID++;
         } else {
-            //TODO: Add to pending request
+            TO DO: Add to pending request
             System.out.println("Used enroller account. Added to pending request");
         }
         */

@@ -20,6 +20,7 @@ public class Request {
         this.request = request;
         newCourse = " ";
         this.datePushed = datePushed;
+        processedDate = null;
     }
     public Request(int count, Student student, String request, String newCourse,LocalDate datePushed) {
         this.ID = count;
@@ -28,6 +29,7 @@ public class Request {
         this.request = request;
         this.newCourse = newCourse;
         this.datePushed = datePushed;
+        processedDate = null;
     }
 
     public int getStatus() {
