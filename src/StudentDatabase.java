@@ -57,7 +57,7 @@ public class StudentDatabase {
         studentList.add(newStudent);
         makeStudentID++;
 
-        /* TO DO: IMPLEMENT IF NEED APPROVAL ANG ENROLLMENT
+        /* TO DO: IMPLEMENT NEED APPROVAL ANG ENROLLMENT
         if (getApprover()) {
             System.out.println("Student enrolled successfully.");
             studentList.add(newStudent);
@@ -83,11 +83,18 @@ public class StudentDatabase {
             System.out.println("\nList Empty.");
             return;
         }
-        System.out.println("\nID NUMBER LAST NAME      FIRST NAME     MIDDLE NAME     AGE  SEX  COURSE    YEAR LEVEL CONTACT INFORMATION   EMAIL ADDRESS            ADDRESS");
+        boolean flag = true;
         for (Student i : studentList) {
-            if (i.getIsActive()) {
+            if (i.getIsActive() == 1) {
+                if (flag) {
+                    System.out.println("\nID NUMBER LAST NAME      FIRST NAME     MIDDLE NAME     AGE  SEX  COURSE    YEAR LEVEL STATUS    CONTACT INFORMATION   EMAIL ADDRESS            ADDRESS");
+                    flag = false;
+                }
                 displayIndividualTable(i);
             }
+        }
+        if (flag) {
+            System.out.println("\nList Empty.");
         }
     }
 
@@ -96,20 +103,28 @@ public class StudentDatabase {
             System.out.println("\nList Empty.");
             return;
         }
-        System.out.println("\nID NUMBER LAST NAME      FIRST NAME     MIDDLE NAME     AGE  SEX  COURSE    YEAR LEVEL CONTACT INFORMATION   EMAIL ADDRESS            ADDRESS");
+        System.out.println("\nID NUMBER LAST NAME      FIRST NAME     MIDDLE NAME     AGE  SEX  COURSE    YEAR LEVEL STATUS    CONTACT INFORMATION   EMAIL ADDRESS            ADDRESS");
         for (Student i : studentList) {
-            if (!i.getIsActive()) {
+            if (i.getIsActive() != 1) {
                 displayIndividualTable(i);
             }
         }
     }
 
     public void displayIndividual(Student student) {
+
+        String status = switch (student.getIsActive()) {
+            case 2 -> "Dismissed";
+            case 3 -> "Graduated";
+            case 4 -> "Removed";
+            default -> "Active";
+        };
         System.out.println(
                 "Name:             " + student.getLastName() + ", " + student.getFirstName() + " " + student.getMiddleName() + "\n" +
                 "Age:              " + Student.getAge(student.getDateOfBirth())+ "\n" +
                 "Gender:           " + student.getSex() + "\n" +
                 "Course:           " + student.getCourse() + " " + student.getYearLevel() + "\n" +
+                "Status:           " + status + "\n" +
                 "Contact Number:   " + student.getContactNumber() + "\n" +
                 "Address:          " + student.getAddress() + "\n" +
                 "Email Address:    " + student.getEmailAddress()
@@ -117,6 +132,13 @@ public class StudentDatabase {
     }
 
     public void displayIndividualTable(Student student) {
+
+        String status = switch (student.getIsActive()) {
+            case 2 -> "Dismissed";
+            case 3 -> "Graduated";
+            case 4 -> "Removed";
+            default -> "Active";
+        };
 
         System.out.printf("%-10d" +
                         "%-15s" +
@@ -126,9 +148,10 @@ public class StudentDatabase {
                         "%-5s" +
                         "%-10s" +
                         "%-11d" +
-                        "%-22s" +
-                        "%-25s" +
-                        "%s\n",
+                        "%-10s" +
+                        "%-22s" +       //Contact num
+                        "%-25s" +       //Email
+                        "%s\n",         //Address
                 student.getStudentID(),
                 student.getLastName(),
                 student.getFirstName(),
@@ -137,6 +160,7 @@ public class StudentDatabase {
                 student.getSex(),
                 student.getCourse(),
                 student.getYearLevel(),
+                status,
                 student.getContactNumber(),
                 student.getEmailAddress(),
                 student.getAddress());
@@ -148,7 +172,7 @@ public class StudentDatabase {
         for (Student i : studentList) {
             if (Objects.equals(i.getCourse(), course)) {
                 if (flag) {
-                    System.out.println("\nID NUMBER LAST NAME      FIRST NAME     MIDDLE NAME     AGE  SEX  COURSE    YEAR LEVEL CONTACT INFORMATION   EMAIL ADDRESS            ADDRESS");
+                    System.out.println("\nID NUMBER LAST NAME      FIRST NAME     MIDDLE NAME     AGE  SEX  COURSE    YEAR LEVEL STATUS    CONTACT INFORMATION   EMAIL ADDRESS            ADDRESS");
                     flag = false;
                 }
                 displayIndividualTable(i);
@@ -186,7 +210,7 @@ public class StudentDatabase {
     public void modifyOptions(Scanner sc, Student student) {
         int choiceB;
         boolean flag;
-        String pending = "";
+        String pending;
         int choice = Util.getUserChoice("""
                 Enter modify options:
                 [1] Modify details
@@ -205,7 +229,15 @@ public class StudentDatabase {
 
                 if (choiceB == 1) {
                     sc.nextLine();
-                    String newCourse = Util.inputCourse(sc);
+                    String newCourse;
+                    while (true) {
+                        newCourse = Util.inputCourse(sc);
+                        if (Objects.equals(newCourse,student.getCourse())) {
+                            System.out.println("\nStudent is already in the same course. Try again.");
+                        } else {
+                            break;
+                        }
+                    }
                     flag = checkApprover("\nCourse changed successfully");
                     if (flag) {
                         student.setCourse(newCourse);
@@ -233,17 +265,39 @@ public class StudentDatabase {
 
                 if (choiceB == 1) {
                     if (getApprover()) {
-                        System.out.println("\nStudent is now set to inactive");
-                        student.setIsActive(false);
+                        switch (choice) {
+                            case 2:
+                                System.out.println("\nStudent is now set to inactive");
+                                student.setIsActive(4);
+                                break;
+                            case 3:
+                                System.out.println("\nStudent is now a graduate.");
+                                student.setIsActive(3);
+                                break;
+                            case 4:
+                                System.out.println("\nStudent is now dismissed.");
+                                student.setIsActive(2);
+                                break;
+                        }
+
                     } else {
+                        int newStatus;
                         System.out.println("\nEnroller account detected! Pushed request to approver");
-                        pending = switch (choice) {
-                            case 2 -> ("Delete student " + student.getStudentID());
-                            case 3 -> ("Graduate student " + student.getStudentID());
-                            case 4 -> ("Dismiss student " + student.getStudentID());
-                            default -> pending;
+                        newStatus = switch (choice) {
+                            case 3 -> {
+                                pending = ("Graduate student " + student.getStudentID());
+                                yield 3;
+                            }
+                            case 4 -> {
+                                pending = ("Dismiss student " + student.getStudentID());
+                                yield 4;
+                            }
+                            default -> {
+                                pending = ("Delete student " + student.getStudentID());
+                                yield 2;
+                            }
                         };
-                        Request req = new Request(requestCount + 1,student,pending,LocalDate.now());
+                        Request req = new Request(requestCount + 1,student,pending,LocalDate.now(),newStatus);
                         requestCount++;
                         pendingRequest.push(req);
                     }
@@ -285,7 +339,7 @@ public class StudentDatabase {
         }
     }
 
-    public void handleRequest (Request toProcess,Scanner sc) {
+    private void handleRequest (Request toProcess,Scanner sc) {
         int choice = Util.getUserChoice("""
                             [1] Approve choice
                             [2] Deny choice
@@ -296,7 +350,7 @@ public class StudentDatabase {
         switch (choice) {
             case 1:
                 if (Objects.equals(toProcess.getNewCourse(), " ")) {
-                    toProcess.setStatus(false);
+                    toProcess.setStudentStatus(toProcess.getNewStatus());
                 } else {
                     toProcess.changeCourse(toProcess.getNewCourse());
                 }

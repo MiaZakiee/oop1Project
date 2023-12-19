@@ -11,16 +11,18 @@ public class Request {
     private final String newCourse;
     private final LocalDate datePushed;
     private LocalDate processedDate;
+    private final int newStatus;
 
     //CONSTRUCTOR
-    public Request(int ID,Student student,String request,LocalDate datePushed) {
+    public Request(int ID,Student student,String request,LocalDate datePushed,int newStatus) {
         this.ID = ID;
         this.student = student;
         this.status = 0;
         this.request = request;
         newCourse = " ";
         this.datePushed = datePushed;
-        processedDate = null;
+        this.processedDate = null;
+        this.newStatus = newStatus;
     }
     public Request(int count, Student student, String request, String newCourse,LocalDate datePushed) {
         this.ID = count;
@@ -30,6 +32,7 @@ public class Request {
         this.newCourse = newCourse;
         this.datePushed = datePushed;
         processedDate = null;
+        this.newStatus = 0;
     }
 
     public int getStatus() {
@@ -56,6 +59,8 @@ public class Request {
         return datePushed;
     }
 
+    public int getNewStatus() {return newStatus;}
+
     public LocalDate getProcessedDate() {
         return processedDate;
     }
@@ -64,7 +69,7 @@ public class Request {
         this.status = status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStudentStatus(int status) {
         this.student.setIsActive(status);
     }
 

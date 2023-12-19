@@ -4,7 +4,7 @@ public class Student extends Person{
     private final int studentID;
     private String course;
     private final int yearLevel;
-    private boolean isActive;
+    private int isActive;
     /*
     TODO: CHANGE isActive to Status
         1 = Active
@@ -16,7 +16,7 @@ public class Student extends Person{
     //Constructor
     public Student(int makeStudentID) {
         this.studentID = makeStudentID;
-        this.isActive = true;
+        this.isActive = 1;
         this.yearLevel = 1;
     }
 
@@ -30,7 +30,7 @@ public class Student extends Person{
     public int getYearLevel() {
         return yearLevel;
     }
-    public boolean getIsActive() {return isActive;}
+    public int getIsActive() {return isActive;}
 
     // setters
     public void setCourse(Scanner sc) {
@@ -40,7 +40,7 @@ public class Student extends Person{
         this.course = course;
     }
 
-    public void setIsActive (boolean isActive) {
+    public void setIsActive (int isActive) {
         this.isActive = isActive;
     }
 }
